@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>taskSphere</title>
+    <link rel="icon" type="image/x-icon" href="styles/photos/favicon.ico" />
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/sidebar.css" />
+    <link rel="stylesheet" href="/styles/calendar.css" />
+    <link rel="stylesheet" href="/styles/task-modal.css" />
+    <script
+      src="https://kit.fontawesome.com/188cbb28a2.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="sidebar">
+        <div class="top">
+          <div class="logo">
+            <img class="main-logo" src="styles/photos/favicon.ico" alt="logo" />
+            <span>taskSphere</span>
+          </div>
+          <i id="btn" class="fa-solid fa-bars"></i>
+          <div class="user">
+            <i class="fa-solid fa-circle-user user-logo icons"></i>
+            <span>DrushtiChepte</span>
+            <span class="tooltip">user</span>
+          </div>
+        </div>
+        <div class="dashboard">
+          <a href="/dashboard"><img
+            class="dash icons"
+            src="/styles/photos/dashboard.png"
+            alt="dashboard"
+          /></a>
+          <span>Dashboard</span>
+          <span class="tooltip">Dashboard</span>
+        </div>
+        <ul>
+          <li>
+            <a href="personal">
+              <i class="fa-solid fa-square icons"></i>
+              <span>Personal</span>
+            </a>
+            <span class="tooltip">Personal</span>
+          </li>
+          <li>
+            <a href="work">
+              <i class="fa-solid fa-square icons"></i>
+              <span>Work</span>
+            </a>
+            <span class="tooltip">Work</span>
+          </li>
+          <li>
+            <a href="completed">
+              <i class="fa-solid fa-square icons"></i>
+              <span>Completed</span>
+            </a>
+            <span class="tooltip">Completed</span>
+          </li>
+          <% newItem.forEach(function(item) { %>
+            <% if (item && item.type) { %> 
+              <li>
+                <a href="/<%= item.type %>">
+                  <i class="fa-regular fa-square icons"></i>
+                  <span><%= item.type %></span>
+                </a>
+                <form action="/delete" method="post" class="sidebarListDelete">
+                  <input type="hidden" name="id" value="<%= item.id %>">
+                  <button type="submit" class="deleteBtn btn2">
+                    <i class="fa-solid fa-trash" style="color: #3772ff;"></i>
+                  </button>
+                </form>
+              </li>
+            <% } %>
+          <% }); %>
+          <li>
+            <form action="/newlist" method="post" class="sidebarlist">
+              <div class="inputClass">
+                <i class="fa-regular fa-square icons"></i>
+                <input
+                  type="text"
+                  name="addlist"
+                  placeholder="Add Here..."
+                  autocomplete="off"
+                />
+              </div>
+              <button class="newbtn" type="submit">
+                <i class="fa-solid fa-circle-plus fa-xl icon addNew"></i>
+                <span>Add new</span>
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+      <div class="main-content">
+        <div class="header">
+          <img class="main-logo" src="styles/photos/favicon.ico" alt="logo" />
+          <span>taskSphere</span>
+        </div>
+        <div class="heading">
+          <h2><%= listType.charAt(0).toUpperCase() + listType.slice(1) %></h2>
+        </div>
+
+        <ul class="list">
+          <% for (let i =0;i< items.length;i++){ %>
+          <li>
+          <i class="fa-regular fa-square icons newtask"></i>
+            <span> <%= items[i].task %></span> 
+            <form action="/<%= listType %>/delete" method="post" class="delete">
+              <input type="hidden" name="index" value="<%= i %>">
+              <button type="submit" class="deleteBtn btn2">
+               <i class="fa-solid fa-trash"></i>
+            </button>
+           </form>
+           <% if(listType !== "completed"){ %>
+            <form action="/<%= listType %>/complete" method="post" class="complete">
+              <input type="hidden" name="index" value="<%= i %>">
+              <button type="submit" class="completeBtn btn2">
+                <i class="fa-solid fa-check"></i>
+            </button>
+           </form>
+           <%}%>
+          </li>
+         <% }%>
+         <% if(listType !== "completed"){ %>
+          <form method="post" action="/<%=listType%>/post" >
+            <i class="fa-regular fa-square icons"></i>
+            <input type="text" name="task" placeholder="Type Here..." autocomplete="off">
+            <button class="btn2 addBtn" type="submit"><i class="fa-solid fa-circle-plus fa-xl icons"></i><span>Add</span></button>
+          </form>
+          <%}%>
+        </ul>
+        
+    </div>
+  </body>
+  <script>
+    let btn = document.querySelector("#btn");
+    let sidebar = document.querySelector(".sidebar");
+
+    btn.onclick = function () {
+      sidebar.classList.toggle("active");
+    };
+  </script>
+</html>

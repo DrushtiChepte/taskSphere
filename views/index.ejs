@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>taskSphere</title>
+    <link rel="icon" type="image/x-icon" href="styles/photos/favicon.ico" />
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/sidebar.css" />
+    <link rel="stylesheet" href="/styles/calendar.css" />
+    <link rel="stylesheet" href="/styles/task-modal.css" />
+    <script
+      src="https://kit.fontawesome.com/188cbb28a2.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="sidebar">
+        <div class="top">
+          <div class="logo">
+            <img class="main-logo" src="styles/photos/favicon.ico" alt="logo" />
+            <span>taskSphere</span>
+          </div>
+          <i id="btn" class="fa-solid fa-bars"></i>
+          <div class="user">
+            <i class="fa-solid fa-circle-user user-logo icons"></i>
+            <span>DrushtiChepte</span>
+            <span class="tooltip">user</span>
+          </div>
+        </div>
+        <div class="dashboard">
+          <a href="/dashboard"
+            ><img
+              class="dash icons"
+              src="/styles/photos/dashboard.png"
+              alt="dashboard"
+          />
+          <span>Dashboard</span>
+          </a>
+          <span class="tooltip">Dashboard</span>
+        </div>
+        <ul>
+          <li>
+            <a href="personal">
+              <i class="fa-solid fa-square icons"></i>
+              <span>Personal</span>
+            </a>
+            <span class="tooltip">Personal</span>
+          </li>
+          <li>
+            <a href="work">
+              <i class="fa-solid fa-square icons"></i>
+              <span>Work</span>
+            </a>
+            <span class="tooltip">Work</span>
+          </li>
+          <li>
+            <a href="completed">
+              <i class="fa-solid fa-square icons"></i>
+              <span>Completed</span>
+            </a>
+            <span class="tooltip">Completed</span>
+          </li>
+          <% newItem.forEach(function(item) { %>
+            <% if (item && item.type) { %> 
+              <li>
+                <a href="/<%= item.type %>">
+                  <i class="fa-regular fa-square icons"></i>
+                  <span><%= item.type %></span>
+                </a>
+                <form action="/delete" method="post" class="sidebarListDelete">
+                  <input type="hidden" name="id" value="<%= item.id %>">
+                  <button type="submit" class="deleteBtn">
+                    <i class="fa-solid fa-trash" style="color: #3772ff;"></i>
+                  </button>
+                </form>
+              </li>
+            <% } %>
+          <% }); %>
+          <li>
+            <form action="/newlist" method="post" class="sidebarlist">
+              <div class="inputClass">
+                <i class="fa-regular fa-square icons"></i>
+                <input
+                  type="text"
+                  name="addlist"
+                  placeholder="Add Here..."
+                  autocomplete="off"
+                />
+              </div>
+              <button class="newbtn" type="submit">
+                <i class="fa-solid fa-circle-plus fa-xl icon addNew"></i>
+                <span>Add new</span>
+              </button>
+              <span class="tooltip">Add Task</span>
+            </form>
+          </li>
+        </ul>
+      </div>
+      <div class="main-content">
+        <div class="header">
+          <img class="main-logo" src="styles/photos/favicon.ico" alt="logo" />
+          <span>taskSphere</span>
+        </div>
+        <div class="date">
+          <h3>Hello, Drushti</h3>
+          <p><%= currDate %></p>
+        </div>
+        <div class="container">
+          <div class="first-row">
+            <a href="completed" class="completed box">Completed</a>
+            <a href="personal" class="personal box">Personal</a>
+            <a href="work" class="work box">Work</a>
+          </div>
+
+          <!-- calendar section -->
+
+          <div class="second-row">
+            <div class="calendar box">
+              <div class="calendar-month">
+                <button onclick="navigate('<%= month - 1 %>', '<%= year %>')" id="prev"><i class="fa-solid fa-angle-left"></i></button>
+                <p class="months"> <%= months[month] %> <%= year %></p>
+                <button onclick="navigate('<%= month + 1 %>', '<%= year %>')" id="next"><i class="fa-solid fa-angle-right"></i></button>
+              </div>
+              <div class="days">
+                <div class="weekdays">
+                  <div>Sun</div>
+                  <div>Mon</div>
+                  <div>Tue</div>
+                  <div>Wed</div>
+                  <div>Thu</div>
+                  <div>Fri</div>
+                  <div>Sat</div>
+                </div>
+                <ul class="dates">
+                  <% calendarData.forEach(date => { %>
+                    <% const hasTask = dates.includes(
+                      ('0' + date.day).slice(-2) + '-' + ('0' + (month + 1)).slice(-2) + '-' + year
+                    ); %>
+                    <li class="<%= date.className %> <%= hasTask ? 'has-task' : '' %>"onclick="showTaskModal('<%= date.day %>')"><%= date.day %></li>
+                  <% }) %>
+                </ul>
+              </div>
+
+              <div id="task-modal">
+                <form action="/add-tasks" method="post">
+                    <input type="hidden" name="date" id="task-date">
+                    <input type="text" name="task" placeholder="Enter Task" required>
+                    <button type="submit">Save Task</button>
+                </form>
+            </div>
+         </div>
+              <div class="more">
+                <p>Events/Tasks</p>
+                <div class="taskList">
+                  <ul class="calendar-tasks"></ul>
+                </div>
+              </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function showTaskModal(day) {
+        const monthNames = [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
+        const numericMonth = parseInt('<%= month %>', 10);
+        const monthName = monthNames[numericMonth];
+        const taskDate= day + '-' + monthName + '-' + '<%= year %>';
+          document.getElementById('task-date').value = taskDate;
+          console.log(taskDate);
+          document.getElementById('task-modal').style.display = 'block';
+
+          document.querySelectorAll(".dates li").forEach((date) => {
+            date.classList.remove('clicked'); // Remove 'clicked' class from all dates
+          });
+
+        const clickedDate = document.querySelector(`.dates li[onclick="showTaskModal('${day}')"]`);
+        if (clickedDate) {
+          clickedDate.classList.add('clicked'); // Add 'clicked' class
+        }else{
+          console.log("could not find clicked date element")
+        };
+        fetch("/tasks", {
+          method: "POST",
+          headers: {
+          "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ taskDate })
+        })
+        .then((response) => response.json())
+        .then((data) => {
+        console.log("Server response:", data);
+        updateTaskList(data); 
+        })
+        .catch((error) => console.error("Error:", error));
+
+      }
+
+      function updateTaskList(tasks) {
+        const taskListElement = document.querySelector(".taskList ul"); 
+        taskListElement.innerHTML = "";
+        if (tasks.length === 0) {
+          taskListElement.innerHTML = "<li>No tasks for this date</li>";
+        } else {
+          tasks.forEach(task => {
+          const listItem = document.createElement("li");
+          listItem.innerHTML = `
+          ${task.task}
+          <button class="deleteBtn2" data-id="${task.id}">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+          `;
+          taskListElement.appendChild(listItem);
+          });
+      
+          document.querySelectorAll(".deleteBtn2").forEach(button => {
+            button.addEventListener("click", function () {
+              const taskId = this.getAttribute("data-id");
+
+              fetch("/delete-task", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id: taskId }),
+              })
+                .then(response => response.json())
+                .then(data => {
+                  console.log(data.message);
+                  this.parentElement.remove(); 
+                })
+                .catch(error => console.error("Error:", error));
+            });
+          });
+        }
+}
+
+  </script>
+  <script>
+    let btn = document.querySelector("#btn");
+    let sidebar = document.querySelector(".sidebar");
+    
+
+    btn.onclick = function () {
+      sidebar.classList.toggle("active");
+    };
+  </script>
+
+  <!-- calendar -->
+
+   <script>
+    function navigate(month,year){
+      if(month < 0){
+        month = 11;
+        year--;
+      }else if(month >11){
+        month = 0;
+        year++;
+      }
+      window.location.href = `/?month=${month}&year=${year}`;
+    }
+   </script>
+  </body>
+</html>

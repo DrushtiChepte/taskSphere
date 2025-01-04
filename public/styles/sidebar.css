@@ -1,0 +1,301 @@
+.sidebar {
+  position: relative;
+  left: 0;
+  top: 0;
+  height: 600px;
+  width: 80px;
+  border-right: 0.5px solid #ffffffb4;
+  border-radius: 15px 0 0 15px;
+  background-color: #1e1e1e;
+  padding: 0.4rem 0.8rem;
+  transition: width 0.5s ease;
+}
+.main-logo {
+  height: 20px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  padding: 1.3rem 1rem 1rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: 0.5s ease-out;
+}
+.sidebar.active .logo {
+  opacity: 1;
+  transition: 0.5s ease-in;
+}
+.sidebar .top #btn {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translate(-50%);
+  cursor: pointer;
+}
+.sidebar.active #btn {
+  padding-left: 80%;
+}
+.logo span {
+  padding: 0.3rem;
+}
+
+.sidebar.active {
+  width: 250px;
+}
+.sidebar .top .user {
+  display: flex;
+  align-items: center;
+  min-width: 50px;
+  height: 50px;
+  padding: 0.5rem 1rem 0.5rem;
+  cursor: pointer;
+  border-radius: 12px;
+}
+.sidebar .top .user-logo {
+  font-size: 1.3rem;
+}
+.sidebar .user span {
+  padding-left: 1rem;
+  opacity: 0;
+}
+.sidebar.active .user span {
+  opacity: 1;
+}
+.sidebar.active .top .user:hover {
+  border: 2px solid #fff;
+}
+.sidebar ul li {
+  position: relative;
+  list-style-type: none;
+  height: 40px;
+  width: 80%;
+  margin: 0.8rem auto;
+  line-height: 20px;
+}
+.sidebar ul li a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  min-width: 50px;
+  height: 50px;
+  padding: 0.5rem 1rem 0.5rem;
+  cursor: pointer;
+  border-radius: 12px;
+  margin-left: -1rem;
+}
+.sidebar ul li a span {
+  margin-left: 3px;
+}
+.sidebar ul li a i {
+  margin-bottom: 10px;
+}
+/*sidebar input form*/
+
+.sidebar ul li form .inputClass {
+  display: flex;
+  align-items: center;
+  min-width: 50px;
+  height: 50px;
+  padding: 0.5rem 0rem 0.5rem 0.95rem;
+  margin: 1rem 0 1rem 0.2rem;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 12px;
+  border: none;
+}
+.sidebar ul li form input {
+  width: 140px;
+  border: none;
+  border-bottom: 2px solid #fff;
+  padding-left: 1rem;
+  outline: none;
+  background: none;
+  box-shadow: none;
+}
+.sidebar ul li form input {
+  opacity: 0;
+}
+.sidebar.active ul li form input {
+  opacity: 1;
+}
+
+/* Sidebar input form button */
+
+.sidebar ul li form .newbtn {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0 0 0 0.9rem;
+  height: 50px;
+  width: 50px;
+  background-color: transparent;
+  border: none;
+  border-radius: 35px;
+  cursor: pointer;
+  transition: width 0.5s ease, background-color 0.3s ease;
+}
+.sidebar.active ul li form .newbtn i {
+  color: #eef0f2;
+}
+
+.sidebar ul li form .newbtn i {
+  color: #3772ff;
+  transition: color 0.3s ease;
+}
+.sidebar.active ul li form .newbtn {
+  background-color: #3772ff;
+  width: 180px;
+  padding-left: 1rem;
+}
+
+.sidebar.active ul li form .newbtn:hover {
+  background-color: #2857c7;
+}
+.sidebar ul li form .newbtn i {
+  margin-right: 0.5rem;
+}
+
+.sidebar ul li form .newbtn span {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.sidebar.active ul li form .newbtn span {
+  opacity: 1;
+}
+
+/* dashboard */
+
+.sidebar.active .dashboard:hover {
+  border: 2px solid #fff;
+}
+.sidebar .dashboard a {
+  display: flex;
+  text-decoration: none;
+}
+.sidebar .dashboard img {
+  height: 20px;
+  cursor: pointer;
+}
+.sidebar ul li a .icons {
+  min-width: 50px;
+  text-align: center;
+  height: 40px;
+  border-radius: 12px;
+  line-height: 50px;
+}
+.sidebar .dashboard {
+  display: flex;
+  align-items: center;
+  min-width: 50px;
+  height: 50px;
+  padding: 0.8rem 1.1rem 0.8rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.sidebar ul li a span {
+  opacity: 0;
+}
+.sidebar .dashboard span {
+  padding-left: 1rem;
+  opacity: 0;
+}
+.sidebar.active ul li a span {
+  opacity: 1;
+}
+.sidebar.active .dashboard span {
+  opacity: 1;
+}
+/* tooltips*/
+
+.sidebar ul li .tooltip {
+  width: auto;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.sidebar ul li:hover .tooltip {
+  opacity: 1;
+  position: absolute;
+  left: 125px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #1a1c1c;
+  box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.26);
+  border-radius: 0.6rem;
+  padding: 0.4rem 1.2rem;
+  line-height: 1.8rem;
+  z-index: 20;
+}
+.sidebar ul li .tooltip {
+  opacity: 0;
+}
+.sidebar.active ul li:hover .tooltip {
+  opacity: 0;
+}
+
+.sidebar .top .user:hover .tooltip {
+  opacity: 1;
+  left: 80px;
+  top: 50%;
+  transform: translate(-110%, -20%);
+  background-color: #1a1c1c;
+  padding: 0.4rem 1.2rem;
+  box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.2);
+  border-radius: 0.6rem;
+  z-index: 20;
+  transition: opacity 0.3s ease;
+}
+.sidebar .dashboard:hover .tooltip {
+  opacity: 1;
+  left: 80px;
+  top: 50%;
+  transform: translate(-50%, -20%);
+  background-color: #1a1c1c;
+  padding: 0.4rem 1.2rem;
+  box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.2);
+  border-radius: 0.6rem;
+  z-index: 20;
+  transition: opacity 0.3s ease;
+}
+.sidebar.active .top .user .tooltip,
+.sidebar.active .dashboard .tooltip {
+  opacity: 0;
+}
+
+.main-content {
+  position: relative;
+  max-height: 65%;
+  width: 100%;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: #3772ff;
+  height: 25px;
+  width: 100%;
+  border-radius: 0 15px 0 0;
+}
+.sidebar.active ~ .main-content .header {
+  max-width: 90%;
+}
+.deleteBtn {
+  position: relative;
+  left: 150px;
+  bottom: 3px;
+  background-color: transparent;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+}
+.sidebarListDelete {
+  position: relative;
+  bottom: 30px;
+}
+.sidebarListDelete:hover .deleteBtn {
+  opacity: 1;
+}
