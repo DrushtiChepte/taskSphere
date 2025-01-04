@@ -22,7 +22,6 @@ const db = new pg.Client({
     password: process.env.PG_PASSWORD,
     port: process.env.PG_PORT || 5432,
   },
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
 });
 db.connect();
 export default db;
