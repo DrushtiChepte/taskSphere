@@ -8,5 +8,12 @@
     "express": "^4.21.0",
     "path": "^0.12.7",
     "pg": "^8.13.1"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
   }
 }
