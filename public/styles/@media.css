@@ -1,0 +1,100 @@
+@media (max-width: 480px) {
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+  }
+  .main-container {
+    height: 100%;
+    width: 100%;
+    background-color: #000;
+    margin: 0;
+  }
+  .navbar-container {
+    width: 100%;
+    overflow: hidden;
+  }
+  .nav-links {
+    display: none;
+  }
+  .main-content {
+    width: auto;
+  }
+  .head-section {
+    position: relative;
+  }
+  .date {
+    margin: 0;
+  }
+  .container {
+    top: 35px;
+  }
+  .container .first-row {
+    padding: 0;
+    flex-direction: column;
+  }
+  .work,
+  .completed,
+  .personal {
+    width: 350px;
+  }
+  .container .second-row {
+    flex-direction: column;
+    margin-left: 12px;
+  }
+  .calendar {
+    width: 350px;
+    margin: 0;
+    margin-bottom: 20px;
+  }
+  .more {
+    height: 150px;
+    width: 350px;
+    margin-bottom: 30px;
+  }
+  .box {
+    margin-top: 10px;
+  }
+}
+@media (max-width: 1000px) and (min-width: 500px) {
+  .main-container {
+    width: 90%;
+    display: flex;
+    align-items: center;
+  }
+  .sidebar {
+    display: none;
+  }
+  .main-content {
+    top: 0;
+  }
+  .container .first-row,
+  .container .second-row {
+    justify-content: center;
+  }
+  .header {
+    display: none;
+  }
+  .navbar-container {
+    opacity: 1;
+  }
+}
+@media (min-width: 1000px) and (max-width: 1200px) {
+  .main-container {
+    width: 80%;
+  }
+  .header {
+    width: 80%;
+  }
+  .head-section {
+    justify-content: space-between;
+    padding: 0 20px 0 0;
+  }
+  .main-content {
+    justify-content: center;
+  }
+  .sidebar {
+    top: 0;
+    left: 0;
+  }
+}

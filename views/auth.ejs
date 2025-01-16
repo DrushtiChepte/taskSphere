@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>taskSphere</title>
+    <link rel="icon" type="image/x-icon" href="styles/photos/favicon.ico" />
+    <link rel="stylesheet" href="/styles/loginregister.css" />
+    <link rel="stylesheet" href="/styles/@media.css" />
+    <script
+      src="https://kit.fontawesome.com/188cbb28a2.js"
+      crossorigin="anonymous"
+    ></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="main-content">
+        <div class="header">
+          <img class="main-logo" src="styles/photos/favicon.ico" alt="logo" />
+          <span>taskSphere</span>
+        </div>
+        <div class="container">
+          <div class="card">
+            <div class="slider"></div>
+            <div class="card-header">
+              <a href="/login-signup"
+                ><button class="login-btn">Login</button></a
+              >
+              <a href="/login-signup"
+                ><button class="signup-btn">Signup</button></a
+              >
+            </div>
+            <div class="form-section">
+              <div class="login-box active-form">
+                <form action="/login" method="post" class="login-form">
+                  <div class="username">
+                    <i class="fa-solid fa-square icons"></i>
+                    <input type="text" placeholder="username" name="username" />
+                  </div>
+                  <div class="password">
+                    <i class="fa-solid fa-square icons"></i>
+                    <input
+                      type="password"
+                      placeholder="password"
+                      name="password"
+                    />
+                  </div>
+                  <button type="submit" class="submit-btn">Login</button>
+                </form>
+                <p class="msg">
+                  Don't have a account? <a href="/login-signup">Signup</a>
+                </p>
+              </div>
+              <div class="signup-box">
+                <form action="/signup" method="post" class="signup-form">
+                  <div class="username">
+                    <i class="fa-solid fa-square icons"></i>
+                    <input
+                      type="text"
+                      placeholder="create your username"
+                      name="username"
+                    />
+                  </div>
+                  <div class="password">
+                    <i class="fa-solid fa-square icons"></i>
+                    <input
+                      type="password"
+                      placeholder="Create Password"
+                      name="password"
+                    />
+                  </div>
+                  <button type="submit" class="submit-btn">Sign up</button>
+                </form>
+                <p class="msg">
+                  Already have a account? <a href="/login-signup">Login</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/js/script.js"></script>
+  </body>
+</html>

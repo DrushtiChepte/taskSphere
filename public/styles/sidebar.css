@@ -50,6 +50,7 @@
   padding: 0.5rem 1rem 0.5rem;
   cursor: pointer;
   border-radius: 12px;
+  text-wrap: nowrap;
 }
 .sidebar .top .user-logo {
   font-size: 1.3rem;
@@ -263,24 +264,6 @@
 .sidebar.active .top .user .tooltip,
 .sidebar.active .dashboard .tooltip {
   opacity: 0;
-}
-
-.main-content {
-  position: relative;
-  max-height: 65%;
-  width: 100%;
-}
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  background-color: #3772ff;
-  height: 25px;
-  width: 100%;
-  border-radius: 0 15px 0 0;
-}
-.sidebar.active ~ .main-content .header {
-  max-width: 90%;
 }
 .deleteBtn {
   position: relative;

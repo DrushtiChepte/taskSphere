@@ -3,6 +3,8 @@ import bodyParser from "body-parser";
 import path from "path";
 import pg from "pg";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+import session from "express-session";
 
 dotenv.config();
 const app = express();
@@ -13,15 +15,19 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 const db = new pg.Client({
-  connectionString: process.env.DATABASE_URL || {
-    user: process.env.PG_USER,
-    host: process.env.PG_HOST,
-    database: process.env.PG_DATABASE,
-    password: process.env.PG_PASSWORD,
-    port: process.env.PG_PORT || 5432,
-  },
+  user: process.env.PG_USER,
+  host: process.env.PG_HOST,
+  database: process.env.PG_DATABASE,
+  password: process.env.PG_PASSWORD,
+  port: process.env.PG_PORT || 5432,
 });
 db.connect();
 export default db;
@@ -46,7 +52,76 @@ const months = [
   "December",
 ];
 
-app.get("/", async (req, res) => {
+// Middleware to check if user is authenticated
+function isAuthenticated(req, res, next) {
+  req.session.username;
+  if (req.session.userId) {
+    return next();
+  }
+  res.redirect("/login-signup");
+}
+
+app.get("/login-signup", (req, res) => {
+  res.render("auth.ejs");
+});
+
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const result = await db.query("SELECT * FROM users WHERE username = ($1)", [
+      username,
+    ]);
+    const user = result.rows[0];
+    req.session.username = user.username;
+
+    if (user) {
+      if (await bcrypt.compare(password, user.password)) {
+        req.session.userId = user.id;
+        res.redirect("/");
+      }
+    } else {
+      res.send("Invalid Credentials.");
+    }
+  } catch (err) {
+    console.error("Error logging in:", err);
+    res.status(500).send("server error");
+  }
+});
+
+app.post("/signup", async (req, res) => {
+  const { username, password } = req.body;
+  const formattedPassword = await bcrypt.hash(password, 10);
+
+  const userCheck = await db.query("SELECT * FROM users WHERE username = $1", [
+    username,
+  ]);
+  if (userCheck.rows.length > 0) {
+    return res.status(400).send("User already exists");
+  } else {
+    try {
+      const result = await db.query(
+        "INSERT INTO users (username , password) values ($1, $2)",
+        [username, formattedPassword]
+      );
+      res.redirect("/login-signup");
+    } catch (err) {
+      console.error("Error registering user:", err);
+      res.status(500).send("Server error");
+    }
+  }
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Session destruction error:", err);
+      return res.redirect("/dashboard");
+    }
+    res.redirect("/login-signup");
+  });
+});
+
+app.get("/", isAuthenticated, async (req, res) => {
   const today = new Date();
   const options = {
     weekday: "long",
@@ -63,17 +138,27 @@ app.get("/", async (req, res) => {
 
   const calendarData = generateCalendar(month, year);
 
-  const result = await db.query("SELECT * FROM lists");
+  const result = await db.query("SELECT * FROM lists WHERE user_id = $1", [
+    req.session.userId,
+  ]);
   let newListItems = result.rows.filter(
     (item) => !["personal", "work", "completed"].includes(item.type)
   );
 
   //calendar tasks management
   const calendarTasksResult = await db.query(
-    "SELECT id, TO_CHAR(date, 'DD-MM-YYYY') AS date, task FROM calendar_tasks"
+    "SELECT id, TO_CHAR(date, 'DD-MM-YYYY') AS date, task FROM calendar_tasks WHERE user_id = ($1)",
+    [req.session.userId]
   );
   const calendarTasks = calendarTasksResult.rows;
   const dates = calendarTasksResult.rows.map((row) => row.date);
+
+  //username
+  const usernameResult = await db.query(
+    "SELECT username FROM users WHERE id = $1",
+    [req.session.userId]
+  );
+  const username = usernameResult.rows[0].username;
 
   res.render("index.ejs", {
     newItem: newListItems,
@@ -84,6 +169,7 @@ app.get("/", async (req, res) => {
     currDate: day,
     calendarTasks: calendarTasks,
     dates: dates,
+    username: username,
   });
 });
 
@@ -130,8 +216,8 @@ app.post("/tasks", async (req, res) => {
 
   try {
     const result = await db.query(
-      "SELECT * FROM calendar_tasks WHERE date = $1",
-      [formattedDate]
+      "SELECT * FROM calendar_tasks WHERE date = $1 AND user_id = $2",
+      [formattedDate, req.session.userId]
     );
     res.json(result.rows);
   } catch (error) {
@@ -146,8 +232,8 @@ app.post("/add-tasks", async (req, res) => {
   let date = req.body.date;
   try {
     const result = await db.query(
-      "INSERT INTO calendar_tasks (date,task) VALUES ($1,$2) RETURNING *",
-      [date, task]
+      "INSERT INTO calendar_tasks (date,task,user_id) VALUES ($1,$2,$3) RETURNING *",
+      [date, task, req.session.userId]
     );
     console.log("Inserted Task:", result.rows[0]);
     res.redirect("/");
@@ -162,7 +248,10 @@ app.post("/delete-task", async (req, res) => {
   const { id } = req.body;
 
   try {
-    await db.query("DELETE FROM calendar_tasks WHERE id = $1", [id]);
+    await db.query(
+      "DELETE FROM calendar_tasks WHERE id = $1 AND user_id = $2",
+      [id, req.session.userId]
+    );
     res.json({ message: `Task with ID ${id} deleted successfully!` });
   } catch (err) {
     console.error("Error deleting task:", err);
@@ -174,9 +263,10 @@ app.post("/delete-task", async (req, res) => {
 app.post("/newlist", async (req, res) => {
   let newItems = req.body.addlist;
   try {
-    const result = await db.query("INSERT INTO lists (type) VALUES ($1)", [
-      newItems,
-    ]);
+    const result = await db.query(
+      "INSERT INTO lists (type, user_id) VALUES ($1,$2)",
+      [newItems, req.session.userId]
+    );
   } catch (err) {
     console.log(err, "error creating list type");
   }
@@ -187,7 +277,10 @@ app.post("/delete", async (req, res) => {
   const itemId = req.body.id;
   console.log(itemId);
   try {
-    const result = await db.query("DELETE FROM lists WHERE id = $1", [itemId]);
+    const result = await db.query(
+      "DELETE FROM lists WHERE id = $1 AND user_id = $2",
+      [itemId, req.session.userId]
+    );
     console.log(`Item with id ${itemId} deleted`);
   } catch (err) {
     console.log(err, "error deleting list item");
@@ -201,6 +294,7 @@ app.get("/dashboard", (req, res) => {
 
 app.get("/:listType", async (req, res) => {
   const listType = req.params.listType;
+
   try {
     const listTypeResult = await db.query(
       "SELECT id FROM lists WHERE type = $1",
@@ -213,9 +307,10 @@ app.get("/:listType", async (req, res) => {
     const listType_id = listTypeResult.rows[0].id;
 
     try {
-      const result = await db.query("SELECT * FROM tasks WHERE list_id = $1", [
-        listType_id,
-      ]);
+      const result = await db.query(
+        "SELECT * FROM tasks WHERE list_id = $1 AND user_id = $2",
+        [listType_id, req.session.userId]
+      );
       const tasks = result.rows;
 
       res.render("index2.ejs", {
@@ -247,8 +342,8 @@ app.post("/:listType/post", async (req, res) => {
 
     try {
       const result = await db.query(
-        "INSERT INTO tasks (task , list_id) VALUES ($1 , $2)",
-        [newTask, listType_id]
+        "INSERT INTO tasks (task , list_id, user_id) VALUES ($1 , $2, $3)",
+        [newTask, listType_id, req.session.userId]
       );
     } catch (err) {
       console.log(err);
@@ -261,46 +356,6 @@ app.post("/:listType/post", async (req, res) => {
   res.redirect(`/${listType}`);
 });
 
-/*delete*/
-// app.post("/:listType/delete",async (req, res) => {
-//   const listType = req.params.listType;
-//   const index = req.body.index;
-
-//   try{
-//     const listTypeResult = await db.query("SELECT id FROM lists WHERE type = $1",
-//       [listType]
-//     )
-//     const listType_id = listTypeResult.rows[0].id;
-
-//     try{
-//       const taskIdResult = await db.query("SELECT id FROM tasks WHERE list_id = $1",
-//         [listType_id]
-//       )
-
-//       const task_id = taskIdResult.rows[0].id;
-//       try{
-//         const result = await db.query("DELETE FROM tasks WHERE id = $1",
-//           [task_id]
-//         )
-//       }catch(err){
-//         console.log(err);
-//         res.status(500).send("Error deleting task");
-//       }
-
-//     }catch(err){
-//       console.log(err)
-//     }
-//   }catch(err){
-//     console.log(err);
-//     console.log("error finding list id")
-//   }
-
-//   // if (lists[listType] && index >= 0 && index < lists[listType].length) {
-//   //   lists[listType].splice(index, 1); // Remove the item at the given index
-//   // }
-//   res.redirect(`/${listType}`);
-// });
-
 app.post("/:listType/delete", async (req, res) => {
   const listType = req.params.listType;
   const index = parseInt(req.body.index);
@@ -312,8 +367,8 @@ app.post("/:listType/delete", async (req, res) => {
     const listType_id = listTypeResult.rows[0].id;
 
     const taskResult = await db.query(
-      "SELECT id FROM tasks WHERE list_id = $1 ORDER BY id ASC LIMIT 1 OFFSET $2",
-      [listType_id, index]
+      "SELECT id FROM tasks WHERE list_id = $1 AND user_id = $2 ORDER BY id ASC LIMIT 1 OFFSET $3",
+      [listType_id, req.session.userId, index]
     );
 
     if (taskResult.rows.length === 0) {
@@ -322,7 +377,10 @@ app.post("/:listType/delete", async (req, res) => {
 
     const task_id = taskResult.rows[0].id;
 
-    await db.query("DELETE FROM tasks WHERE id = $1", [task_id]);
+    await db.query("DELETE FROM tasks WHERE id = $1 AND user_id = $2", [
+      task_id,
+      req.session.userId,
+    ]);
     console.log(`Task with ID ${task_id} deleted successfully.`);
     res.redirect(`/${listType}`);
   } catch (err) {
@@ -331,23 +389,13 @@ app.post("/:listType/delete", async (req, res) => {
   }
 });
 
-/*Completed list */
-// app.post("/:listType/complete", (req, res) => {
-//   const listType = req.params.listType;
-//   const index = req.body.index;
-//   if (lists[listType] && index >= 0 && index < lists[listType].length) {
-//     const completeItems = lists[listType].splice(index, 1)[0];
-//     lists.completed.push(completeItems);
-//   }
-//   res.redirect(`/${listType}`);
-// });
 app.post("/:listType/complete", async (req, res) => {
   const listType = req.params.listType;
   const index = parseInt(req.body.index);
   try {
     const result = await db.query(
-      "SELECT id FROM tasks WHERE list_id = (SELECT id FROM lists WHERE type = $1) ORDER BY id ASC LIMIT 1 OFFSET $2",
-      [listType, index]
+      "SELECT id FROM tasks WHERE list_id = (SELECT id FROM lists WHERE type = $1 AND user_id = $2) ORDER BY id ASC LIMIT 1 OFFSET $3",
+      [listType, req.session.userId, index]
     );
     if (result.rows.length === 0) {
       return res.status(404).send("Task not found");
@@ -356,15 +404,15 @@ app.post("/:listType/complete", async (req, res) => {
     const taskId = result.rows[0].id;
 
     const completedListResult = await db.query(
-      "SELECT id FROM lists WHERE type = $1",
-      ["completed"]
+      "SELECT id FROM lists WHERE type = $1 and user_id = $2",
+      ["completed", req.session.userId]
     );
     const completedListId = completedListResult.rows[0].id;
 
-    await db.query("UPDATE tasks SET list_id = $1 WHERE id = $2", [
-      completedListId,
-      taskId,
-    ]);
+    await db.query(
+      "UPDATE tasks SET list_id = $1 WHERE id = $2 AND user_id = $3",
+      [completedListId, taskId, req.session.userId]
+    );
 
     res.redirect(`/${listType}`);
   } catch (err) {

@@ -23,14 +23,52 @@ body {
     inset 0 0.5rem 0.8rem rgba(59, 58, 58, 0.2);
   z-index: 30;
 }
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: fixed;
+  background-color: #3772ff;
+  height: 25px;
+  width: 60%;
+  border-radius: 15px 15px 0 0;
+  transition: width 0.3s ease;
+  z-index: -1;
+}
+
+.header img {
+  height: 20px;
+  width: 20px;
+}
+
 .header span {
   margin: 0 0.8rem 0 0.2rem;
+}
+
+.main-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 85%;
+  width: 100%;
+  top: 25px;
+  transition: width 0.4s ease-in-out;
+}
+.sidebar.active ~ .main-content {
+  width: calc(100% - 250px);
 }
 .container {
   max-width: 90%;
   height: 65%;
   position: relative;
   top: -15px;
+}
+.head-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-right: 20px;
 }
 .date p {
   font-size: 12px;
@@ -39,6 +77,18 @@ body {
 }
 .date {
   margin: 1rem 1rem 1rem 2.3rem;
+}
+
+.logOut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.logOut a {
+  font-size: 22px;
+}
+.logOut span {
+  font-size: 12px;
 }
 
 /* boxes */
@@ -84,6 +134,9 @@ body {
 }
 .list {
   margin: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
 }
 .list form {
   height: 50px;
@@ -142,8 +195,19 @@ body {
   position: relative;
   left: 40.3rem;
 }
-.completeBtn {
+
+.complete {
+  display: flex;
+  justify-content: end;
   position: relative;
-  left: 42.8rem;
+  left: 4rem;
   bottom: 7.1rem;
+}
+
+.navbar-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  opacity: 0;
 }
