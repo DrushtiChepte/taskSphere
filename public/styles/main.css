@@ -164,6 +164,7 @@ body {
   border: none;
   border-radius: 10px;
   width: auto;
+  cursor: pointer;
 }
 .addBtn {
   position: relative;
@@ -189,11 +190,10 @@ body {
 .list .complete {
   border-bottom: 2px solid #1a1c1c;
 }
-.deleteBtn {
-  display: flex;
-  align-items: center;
+.delete .deleteBtn {
   position: relative;
   left: 40.3rem;
+  z-index: 10;
 }
 
 .complete {

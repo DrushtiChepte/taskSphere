@@ -74,10 +74,11 @@ app.post("/login", async (req, res) => {
     ]);
     const user = result.rows[0];
     req.session.username = user.username;
-
+    console.log(user.id);
     if (user) {
       if (await bcrypt.compare(password, user.password)) {
         req.session.userId = user.id;
+        console.log(req.session.userId);
         res.redirect("/");
       }
     } else {
@@ -395,9 +396,18 @@ app.post("/:listType/complete", async (req, res) => {
   const index = parseInt(req.body.index);
   try {
     const result = await db.query(
-      "SELECT id FROM tasks WHERE list_id = (SELECT id FROM lists WHERE type = $1 AND user_id = $2) ORDER BY id ASC LIMIT 1 OFFSET $3",
+      "SELECT id FROM tasks WHERE list_id = (SELECT id FROM lists WHERE type = $1) AND user_id = $2 ORDER BY id ASC LIMIT 1 OFFSET $3",
       [listType, req.session.userId, index]
     );
+    console.log(
+      "listType:",
+      listType,
+      "userId:",
+      req.session.userId,
+      "index:",
+      index
+    );
+    console.log(result.rows);
     if (result.rows.length === 0) {
       return res.status(404).send("Task not found");
     }
@@ -405,8 +415,8 @@ app.post("/:listType/complete", async (req, res) => {
     const taskId = result.rows[0].id;
 
     const completedListResult = await db.query(
-      "SELECT id FROM lists WHERE type = $1 and user_id = $2",
-      ["completed", req.session.userId]
+      "SELECT id FROM lists WHERE type = $1",
+      ["completed"]
     );
     const completedListId = completedListResult.rows[0].id;
 
