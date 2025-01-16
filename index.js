@@ -55,6 +55,7 @@ const months = [
 // Middleware to check if user is authenticated
 function isAuthenticated(req, res, next) {
   req.session.username;
+  req.session.email;
   if (req.session.userId) {
     return next();
   }
@@ -66,10 +67,10 @@ app.get("/login-signup", (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
   try {
-    const result = await db.query("SELECT * FROM users WHERE username = ($1)", [
-      username,
+    const result = await db.query("SELECT * FROM users WHERE email = ($1)", [
+      email,
     ]);
     const user = result.rows[0];
     req.session.username = user.username;
@@ -89,19 +90,19 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
   const formattedPassword = await bcrypt.hash(password, 10);
 
-  const userCheck = await db.query("SELECT * FROM users WHERE username = $1", [
-    username,
+  const userCheck = await db.query("SELECT * FROM users WHERE email = $1", [
+    email,
   ]);
   if (userCheck.rows.length > 0) {
     return res.status(400).send("User already exists");
   } else {
     try {
       const result = await db.query(
-        "INSERT INTO users (username , password) values ($1, $2)",
-        [username, formattedPassword]
+        "INSERT INTO users (username , email, password) values ($1, $2, $3)",
+        [username, email, formattedPassword]
       );
       res.redirect("/login-signup");
     } catch (err) {

@@ -36,7 +36,21 @@
                 <form action="/login" method="post" class="login-form">
                   <div class="username">
                     <i class="fa-solid fa-square icons"></i>
-                    <input type="text" placeholder="username" name="username" />
+                    <input
+                      type="text"
+                      placeholder="username"
+                      name="username"
+                      required
+                    />
+                  </div>
+                  <div class="username">
+                    <i class="fa-solid fa-square icons"></i>
+                    <input
+                      type="email"
+                      placeholder="email"
+                      name="email"
+                      required
+                    />
                   </div>
                   <div class="password">
                     <i class="fa-solid fa-square icons"></i>
@@ -44,6 +58,7 @@
                       type="password"
                       placeholder="password"
                       name="password"
+                      required
                     />
                   </div>
                   <button type="submit" class="submit-btn">Login</button>
@@ -60,6 +75,16 @@
                       type="text"
                       placeholder="create your username"
                       name="username"
+                      required
+                    />
+                  </div>
+                  <div class="username">
+                    <i class="fa-solid fa-square icons"></i>
+                    <input
+                      type="email"
+                      placeholder="email"
+                      name="email"
+                      required
                     />
                   </div>
                   <div class="password">
@@ -68,6 +93,7 @@
                       type="password"
                       placeholder="Create Password"
                       name="password"
+                      required
                     />
                   </div>
                   <button type="submit" class="submit-btn">Sign up</button>
