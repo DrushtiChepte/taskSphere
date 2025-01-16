@@ -1,9 +1,15 @@
 #task-modal {
-  width: 100%;
+  max-width: 100%;
   height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  bottom: -1rem;
+  left: 18%;
+  text-wrap: nowrap;
+}
+@media (max-width: 1000px) {
+  #task-modal {
+    left: auto;
+  }
 }
 #task-modal input {
   background-color: transparent;

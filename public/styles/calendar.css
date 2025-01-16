@@ -28,6 +28,7 @@
   font-size: small;
   overflow-y: scroll;
   scrollbar-width: none;
+  position: relative;
 }
 .calendar:hover {
   border: none;
@@ -44,6 +45,7 @@
   position: relative;
   bottom: 0.5rem;
   font-size: large;
+  margin-top: 5px;
 }
 .calendar-month button {
   background: none;
