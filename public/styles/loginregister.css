@@ -130,8 +130,16 @@ body {
   outline: none;
   box-shadow: none;
   background: none;
+  background-color: transparent;
   border: none;
   border-bottom: 2px solid #fff;
+}
+.form-section input:autofill {
+  background: none !important;
+  color: #fff !important;
+  border-bottom: 2px solid #fff !important;
+  box-shadow: 0 0 0 30px #1a1c1c inset !important;
+  -webkit-text-fill-color: #fff !important;
 }
 .submit-btn {
   height: 40px;

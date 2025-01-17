@@ -268,7 +268,7 @@
 .sidebarListDelete .deleteBtn {
   position: relative;
   left: 150px;
-  bottom: 3px;
+  bottom: 9px;
   background-color: transparent;
   border: none;
   font-size: 12px;
@@ -279,6 +279,6 @@
   position: relative;
   bottom: 30px;
 }
-.sidebarListDelete:hover .deleteBtn {
+.sidebar.active .sidebarListDelete:hover .deleteBtn {
   opacity: 1;
 }

@@ -8,7 +8,10 @@
 }
 @media (max-width: 1000px) {
   #task-modal {
-    left: auto;
+    bottom: 1rem;
+    left: 10px;
+    right: 10px;
+    width: calc(100% - 20px);
   }
 }
 #task-modal input {
@@ -21,12 +24,14 @@
   color: #353839;
   font-size: 16px;
   margin-right: 10px;
+  width: calc(100% - 110px); /* Auto-adjust */
 }
 #task-modal button {
   background-color: #3772ff;
   padding: 5px 10px;
   border: none;
   border-radius: 5px;
+  width: auto;
 }
 #task-modal button:hover {
   cursor: pointer;
